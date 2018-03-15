@@ -1,8 +1,8 @@
-#include <SPI.h>
-#include <PN532_SPI.h>
 #include "PN532.h"
 #include <ESP8266WiFi.h>
+#include <PN532_SPI.h>
 #include <PubSubClient.h>
+#include <SPI.h>
 
 #include "config.h"
 
@@ -19,7 +19,7 @@ void setup(void) {
   Serial.begin(115200);
   Serial.println("Hello!");
 
-  pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
+  pinMode(BUILTIN_LED, OUTPUT); // Initialize the BUILTIN_LED pin as an output
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
@@ -28,15 +28,19 @@ void setup(void) {
   nfc.begin();
 
   uint32_t versiondata = nfc.getFirmwareVersion();
-  if (! versiondata) {
+  if (!versiondata) {
     Serial.print("Didn't find PN53x board");
-    while (1); // halt
+    while (1)
+      ; // halt
   }
 
   // Got ok data, print it out!
-  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX);
-  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC);
-  Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+  Serial.print("Found chip PN5");
+  Serial.println((versiondata >> 24) & 0xFF, HEX);
+  Serial.print("Firmware ver. ");
+  Serial.print((versiondata >> 16) & 0xFF, DEC);
+  Serial.print('.');
+  Serial.println((versiondata >> 8) & 0xFF, DEC);
 
   // Set the max number of retry attempts to read from a card
   // This prevents us from waiting forever for a card, which is
@@ -70,7 +74,7 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
-void callback(char* topic, byte* payload, unsigned int length) {
+void callback(char *topic, byte *payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
@@ -81,13 +85,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
   // Switch on the LED if an 1 was received as first character
   if ((char)payload[0] == '1') {
-    digitalWrite(BUILTIN_LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
+    digitalWrite(BUILTIN_LED,
+                 LOW); // Turn the LED on (Note that LOW is the voltage level
     // but actually the LED is on; this is because
     // it is acive low on the ESP-01)
   } else {
-    digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
+    digitalWrite(BUILTIN_LED,
+                 HIGH); // Turn the LED off by making the voltage HIGH
   }
-
 }
 
 void reconnect() {
@@ -111,7 +116,6 @@ void reconnect() {
   }
 }
 
-
 void loop(void) {
   if (!client.connected()) {
     reconnect();
@@ -119,21 +123,24 @@ void loop(void) {
   client.loop();
 
   boolean success;
-  uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
-  uint8_t uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+  uint8_t uid[] = {0, 0, 0, 0, 0, 0, 0}; // Buffer to store the returned UID
+  uint8_t uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A
+                     // card type)
 
   // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
   // 'uid' will be populated with the UID, and uidLength will indicate
   // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
-  success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength);
+  success =
+      nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength);
 
   if (success) {
     Serial.println("Found a card!");
-    Serial.print("UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
+    Serial.print("UID Length: ");
+    Serial.print(uidLength, DEC);
+    Serial.println(" bytes");
     Serial.print("UID Value: ");
     String uidString = "0x";
-    for (uint8_t i=0; i < uidLength; i++)
-    {
+    for (uint8_t i = 0; i < uidLength; i++) {
       uidString += String(uid[i], HEX);
     }
     Serial.println(uidString);
@@ -141,11 +148,11 @@ void loop(void) {
 
     // wait until the card is taken away
     nfc.setPassiveActivationRetries(0x01);
-    while (nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength)) {}
+    while (
+        nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength)) {
+    }
     nfc.setPassiveActivationRetries(0xFF);
-  }
-  else
-  {
+  } else {
     // PN532 probably timed out waiting for a card
     Serial.println("Timed out waiting for a card");
   }
