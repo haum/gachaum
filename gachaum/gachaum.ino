@@ -97,10 +97,8 @@ void reconnect() {
     // Attempt to connect
     if (client.connect("ESP8266Client")) {
       Serial.println("connected");
-      // Once connected, publish an announcement...
-      client.publish("outTopic", "hello world");
-      // ... and resubscribe
-      client.subscribe("inTopic");
+      client.publish("haum/gachaum/announce", "hello world");
+      client.subscribe("haum/gachaum/strike");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -139,7 +137,7 @@ void loop(void) {
       uidString += String(uid[i], HEX);
     }
     Serial.println(uidString);
-    client.publish("outTopic", uidString.c_str());
+    client.publish("haum/gachaum/tag/uid", uidString.c_str());
 
     // wait until the card is taken away
     nfc.setPassiveActivationRetries(0x01);
