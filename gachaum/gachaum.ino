@@ -23,7 +23,7 @@ void setup(void) {
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
+  client.setCallback(mqtt_callback);
 
   nfc.begin();
 
@@ -73,7 +73,7 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
-void callback(char *topic, byte *payload, unsigned int length) {
+void mqtt_callback(char *topic, byte *payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
