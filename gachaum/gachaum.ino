@@ -95,7 +95,7 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("ESP8266Client")) {
+    if (client.connect("gachaum")) {
       Serial.println("connected");
       client.publish("haum/gachaum/announce", "hello world");
       client.subscribe("haum/gachaum/strike");
