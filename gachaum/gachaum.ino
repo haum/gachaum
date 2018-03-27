@@ -50,6 +50,7 @@ void setup(void) {
   // configure board to read RFID tags
   nfc.SAMConfig();
 
+  pinMode(D1, OUTPUT);
   Serial.println("Waiting for an ISO14443A card");
 }
 
@@ -82,11 +83,11 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
   }
   Serial.println();
 
-  // Switch on the LED if an 1 was received as first character
-  if ((char)payload[0] == '1') {
-    digitalWrite(BUILTIN_LED, LOW);
-  } else {
-    digitalWrite(BUILTIN_LED, HIGH);
+  if (strcmp(topic, "haum/gachaum/strike") == 0) {
+    const char *strike_open = "open";
+    if (memcmp(payload, strike_open, sizeof(strike_open)) == 0) {
+      digitalWrite(D1, HIGH);
+    }
   }
 }
 
@@ -143,10 +144,12 @@ void loop(void) {
     nfc.setPassiveActivationRetries(0x01);
     while (
         nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength)) {
+      client.loop();
     }
     nfc.setPassiveActivationRetries(0xFF);
   } else {
     // PN532 probably timed out waiting for a card
     Serial.println("Timed out waiting for a card");
+    digitalWrite(D1, LOW);
   }
 }
