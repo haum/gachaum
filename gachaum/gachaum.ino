@@ -110,22 +110,26 @@ void reconnect() {
   }
 }
 
+uint8_t _modulation = PN532_MIFARE_ISO14443B;
+
 void loop(void) {
   if (!client.connected()) {
     reconnect();
   }
   client.loop();
 
+  _modulation = (_modulation == PN532_MIFARE_ISO14443A)
+                    ? PN532_MIFARE_ISO14443B
+                    : PN532_MIFARE_ISO14443A;
   boolean success;
-  uint8_t uid[] = {0, 0, 0, 0, 0, 0, 0}; // Buffer to store the returned UID
+  uint8_t uid[12];   // Buffer to store the returned UID
   uint8_t uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A
                      // card type)
 
   // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
   // 'uid' will be populated with the UID, and uidLength will indicate
   // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
-  success =
-      nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength);
+  success = nfc.readPassiveTargetID(_modulation, &uid[0], &uidLength);
 
   if (success) {
     Serial.println("Found a card!");
@@ -142,8 +146,7 @@ void loop(void) {
 
     // wait until the card is taken away
     nfc.setPassiveActivationRetries(0x01);
-    while (
-        nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength)) {
+    while (nfc.isTargetPresent(_modulation)) {
       client.loop();
     }
     nfc.setPassiveActivationRetries(0xFF);

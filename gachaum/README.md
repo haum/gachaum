@@ -26,9 +26,9 @@ Powered by WeMos through its USB port
 
 This library can be installed using Arduino IDE.
 
-* Seeed-Studio PN532
+* Seeed-Studio PN532 (forked)
 
-https://github.com/Seeed-Studio/PN532
+https://github.com/haum/PN532
 
 ```
 git submodule init
