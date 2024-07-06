@@ -96,7 +96,7 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("gachaum")) {
+    if (client.connect("gachaum", mqtt_user, mqtt_pass)) {
       Serial.println("connected");
       client.publish("haum/gachaum/announce", "hello world");
       client.subscribe("haum/gachaum/strike");

@@ -1,3 +1,5 @@
 const char* mqtt_server = "broker.example.com";
 const char* wifi_ssid = "SSID";
 const char* wifi_password = "Super Secret Passphrase";
+const char* mqtt_user ="mqtt-user";
+const char* mqtt_pass ="mqtt-pass";
