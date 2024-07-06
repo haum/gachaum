@@ -1,8 +1,8 @@
 #include "PN532.h"
 #include <ESP8266WiFi.h>
-#include <PN532_SPI.h>
+#include <PN532_I2C.h>
 #include <PubSubClient.h>
-#include <SPI.h>
+#include <Wire.h>
 
 #include "config.h"
 
@@ -12,8 +12,8 @@ long lastMsg = 0;
 char msg[50];
 int value = 0;
 
-PN532_SPI pn532spi(SPI, D8);
-PN532 nfc(pn532spi);
+PN532_I2C pn532_i2c(Wire);
+PN532 nfc(pn532_i2c);
 
 void setup(void) {
   Serial.begin(115200);

@@ -36,4 +36,5 @@ git submodule update
 export ARDUINO_LIBS="$HOME/Arduino/libraries"
 ln -s $PWD/PN532/PN532 $ARDUINO_LIBS/
 ln -s $PWD/PN532/PN532_SPI $ARDUINO_LIBS/
+ln -s $PWD/PN532/PN532_I2C $ARDUINO_LIBS/
 ```
