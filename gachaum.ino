@@ -10,6 +10,7 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
 char msg[50];
+char message [50];
 int value = 0;
 
 PN532_I2C pn532_i2c(Wire);
@@ -19,7 +20,7 @@ void setup(void) {
   Serial.begin(115200);
   Serial.println("Hello!");
 
-  pinMode(BUILTIN_LED, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
@@ -84,13 +85,16 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
   Serial.print("] ");
   for (int i = 0; i < length; i++) {
     Serial.print((char)payload[i]);
+    message[i]=(char)payload[i];
+    message[i+1]=0;
   }
   Serial.println();
 
-  if (strcmp(topic, "haum/gachaum/strike") == 0) {
-    const char *strike_open = "open";
-    if (memcmp(payload, strike_open, sizeof(strike_open)) == 0) {
-      digitalWrite(D1, HIGH);
+  if (strcmp(topic, "haum/laser/power") == 0) {
+    Serial.println("On topic");
+    if (strcmp(message, "on")==0){
+      Serial.print("On");
+      digitalWrite(D3, HIGH);
     }
   }
 }
@@ -100,10 +104,10 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("gachaum", mqtt_user, mqtt_pass)) {
+    if (client.connect("laserhaum", mqtt_user, mqtt_pass)) {
       Serial.println("connected");
-      client.publish("haum/gachaum/announce", "hello world");
-      client.subscribe("haum/gachaum/strike");
+      // client.publish("haum/gachaum/announce", "hello world");
+      client.subscribe("haum/laser/power");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
