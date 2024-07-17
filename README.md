@@ -16,7 +16,7 @@ Powered by WeMos through its USB port
 * GND (WeMos) -> GND (PN532)
 * GND (WeMos) -> GND (Relay)
 * +5V (WeMos) -> +5V (Relay)
-* D1 (WeMos) -> D1 (Relay)
+* D1 (WeMos) -> D3 (Relay)
 
 ##  Arduino required libraries
 

@@ -25,6 +25,7 @@ void setup(void) {
   client.setServer(mqtt_server, 1883);
   client.setCallback(mqtt_callback);
 
+  Wire.begin();
   nfc.begin();
 
   uint32_t versiondata = nfc.getFirmwareVersion();
@@ -50,7 +51,10 @@ void setup(void) {
   // configure board to read RFID tags
   nfc.SAMConfig();
 
-  pinMode(D1, OUTPUT);
+  pinMode(D3, OUTPUT);
+  pinMode(D5, OUTPUT);
+  digitalWrite(D3, LOW);
+  digitalWrite(D5, LOW);
   Serial.println("Waiting for an ISO14443A card");
 }
 
@@ -142,17 +146,18 @@ void loop(void) {
       uidString += String(uid[i], HEX);
     }
     Serial.println(uidString);
-    client.publish("haum/gachaum/tag/uid", uidString.c_str());
-
+    client.publish("haum/laser/tag/uid", uidString.c_str());
+    digitalWrite(D5, HIGH);
     // wait until the card is taken away
     nfc.setPassiveActivationRetries(0x01);
     while (nfc.isTargetPresent(_modulation)) {
       client.loop();
     }
+    digitalWrite(D5, LOW);
     nfc.setPassiveActivationRetries(0xFF);
   } else {
     // PN532 probably timed out waiting for a card
     Serial.println("Timed out waiting for a card");
-    digitalWrite(D1, LOW);
+    digitalWrite(D3, LOW);
   }
 }
