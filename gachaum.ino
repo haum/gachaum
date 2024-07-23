@@ -65,7 +65,18 @@ void setup_wifi() {
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(wifi_ssid);
+  
+  uint8_t macAddr[6];
+  char hostname [32];
+  WiFi.macAddress(macAddr);
+  sprintf (hostname, READER_NAME);
+  Serial.println();
+  Serial.print("new hostname -> : ");
+  Serial.print(hostname);
+  Serial.println();
+  WiFi.hostname(hostname);
 
+  WiFi.mode(WIFI_STA);
   WiFi.begin(wifi_ssid, wifi_password);
 
   while (WiFi.status() != WL_CONNECTED) {
@@ -77,6 +88,8 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+
+
 }
 
 void mqtt_callback(char *topic, byte *payload, unsigned int length) {
@@ -93,7 +106,7 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
   if (strcmp(topic, "haum/laser/power") == 0) {
     Serial.println("On topic");
     if (strcmp(message, "on")==0){
-      Serial.print("On");
+      Serial.println("On");
       digitalWrite(D3, HIGH);
     }
   }
@@ -104,7 +117,7 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("laserhaum", mqtt_user, mqtt_pass)) {
+    if (client.connect( READER_NAME, mqtt_user, mqtt_pass)) {
       Serial.println("connected");
       // client.publish("haum/gachaum/announce", "hello world");
       client.subscribe("haum/laser/power");

@@ -3,3 +3,5 @@ const char* wifi_ssid = "SSID";
 const char* wifi_password = "Super Secret Passphrase";
 const char* mqtt_user ="mqtt-user";
 const char* mqtt_pass ="mqtt-pass";
+
+#define READER_NAME "reader-name"
